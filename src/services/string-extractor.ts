@@ -1,77 +1,109 @@
 import type { Position, TextDocument } from 'vscode'
 
 /**
- * Interface for extracting strings from documents at a given position
+ * Quote style configuration
  */
-export interface StringExtractor {
-  /**
-   * Language IDs that this extractor supports
-   */
-  languageIds: string[]
-
-  /**
-   * Extract the string at the given position in the document
-   * @param document The text document
-   * @param position The cursor position
-   * @returns The extracted string (without quotes) or null if not found
-   */
-  extract: (document: TextDocument, position: Position) => string | null
+interface QuoteStyle {
+  /** Opening quote character(s) */
+  open: string
+  /** Closing quote character(s) */
+  close: string
+  /** Whether this quote style supports escaping with backslash */
+  supportsEscape: boolean
+  /** Whether this is a multi-line quote style (e.g., triple quotes) */
+  multiLine: boolean
 }
 
 /**
- * Extractor for JSON/JSONL string values
+ * Common quote styles used in various programming languages
  */
-export class JsonStringExtractor implements StringExtractor {
-  languageIds = ['json', 'jsonc', 'jsonl']
-
-  extract(document: TextDocument, position: Position): string | null {
-    const line = document.lineAt(position.line).text
-    const cursorOffset = position.character
-
-    // Find all string literals in the line
-    // Match: "..." allowing escaped characters inside
-    const stringRegex = /"(?:[^"\\]|\\.)*"/g
-    let match: RegExpExecArray | null = stringRegex.exec(line)
-
-    while (match !== null) {
-      const start = match.index
-      const end = start + match[0].length
-
-      // Check if cursor is within this string
-      if (cursorOffset >= start && cursorOffset <= end) {
-        // Return the string content without the surrounding quotes
-        return match[0].slice(1, -1)
-      }
-
-      match = stringRegex.exec(line)
-    }
-
-    return null
-  }
-}
-
-/**
- * Registry of all string extractors
- */
-const extractors: StringExtractor[] = [
-  new JsonStringExtractor(),
+const QUOTE_STYLES: QuoteStyle[] = [
+  // Triple quotes (must be checked before single quotes)
+  { open: '"""', close: '"""', supportsEscape: true, multiLine: true },
+  { open: '\'\'\'', close: '\'\'\'', supportsEscape: true, multiLine: true },
+  // Backtick / template literals
+  { open: '`', close: '`', supportsEscape: true, multiLine: true },
+  // Standard quotes
+  { open: '"', close: '"', supportsEscape: true, multiLine: false },
+  { open: '\'', close: '\'', supportsEscape: true, multiLine: false },
 ]
 
 /**
- * Extract string at position using the appropriate extractor for the document's language
+ * Result of string extraction
  */
-export function extractStringAtPosition(
-  document: TextDocument,
-  position: Position,
-): string | null {
-  const languageId = document.languageId
+interface ExtractResult {
+  /** The extracted string content (without quotes) */
+  content: string
+  /** Start position (line, character) */
+  start: { line: number, character: number }
+  /** End position (line, character) */
+  end: { line: number, character: number }
+  /** The quote style used */
+  quoteStyle: QuoteStyle
+}
 
-  for (const extractor of extractors) {
-    if (extractor.languageIds.includes(languageId)) {
-      const result = extractor.extract(document, position)
-      if (result !== null) {
-        return result
+/**
+ * Check if a position in text is escaped (preceded by odd number of backslashes)
+ */
+function isEscaped(text: string, position: number): boolean {
+  let backslashCount = 0
+  let i = position - 1
+  while (i >= 0 && text[i] === '\\') {
+    backslashCount++
+    i--
+  }
+  return backslashCount % 2 === 1
+}
+
+/**
+ * Find string at position for single-line quote styles
+ */
+function findSingleLineString(
+  line: string,
+  lineNumber: number,
+  cursorChar: number,
+  quoteStyle: QuoteStyle,
+): ExtractResult | null {
+  const { open, close, supportsEscape } = quoteStyle
+
+  let i = 0
+  while (i < line.length) {
+    // Look for opening quote
+    if (line.substring(i, i + open.length) === open) {
+      const startChar = i
+      i += open.length
+      const contentStart = i
+
+      // Find closing quote
+      while (i < line.length) {
+        if (line.substring(i, i + close.length) === close) {
+          // Check if escaped
+          if (supportsEscape && isEscaped(line, i)) {
+            i++
+            continue
+          }
+
+          const contentEnd = i
+          const endChar = i + close.length
+
+          // Check if cursor is within this string (inclusive of quotes)
+          if (cursorChar >= startChar && cursorChar < endChar) {
+            return {
+              content: line.substring(contentStart, contentEnd),
+              start: { line: lineNumber, character: startChar },
+              end: { line: lineNumber, character: endChar },
+              quoteStyle,
+            }
+          }
+
+          i = endChar
+          break
+        }
+        i++
       }
+    }
+    else {
+      i++
     }
   }
 
@@ -79,8 +111,132 @@ export function extractStringAtPosition(
 }
 
 /**
- * Register a custom string extractor
+ * Find string at position for multi-line quote styles
  */
-export function registerExtractor(extractor: StringExtractor): void {
-  extractors.push(extractor)
+function findMultiLineString(
+  document: TextDocument,
+  cursorLine: number,
+  cursorChar: number,
+  quoteStyle: QuoteStyle,
+): ExtractResult | null {
+  const { open, close, supportsEscape } = quoteStyle
+
+  // Get full text and calculate cursor offset
+  const fullText = document.getText()
+  let cursorOffset = 0
+  for (let i = 0; i < cursorLine; i++) {
+    cursorOffset += document.lineAt(i).text.length + 1 // +1 for newline
+  }
+  cursorOffset += cursorChar
+
+  let i = 0
+  while (i < fullText.length) {
+    // Look for opening quote
+    if (fullText.substring(i, i + open.length) === open) {
+      const startOffset = i
+      i += open.length
+      const contentStart = i
+
+      // Find closing quote
+      while (i < fullText.length) {
+        if (fullText.substring(i, i + close.length) === close) {
+          // Check if escaped
+          if (supportsEscape && isEscaped(fullText, i)) {
+            i++
+            continue
+          }
+
+          const contentEnd = i
+          const endOffset = i + close.length
+
+          // Check if cursor is within this string
+          if (cursorOffset >= startOffset && cursorOffset < endOffset) {
+            // Convert offsets back to positions
+            const startPos = document.positionAt(startOffset)
+            const endPos = document.positionAt(endOffset)
+
+            return {
+              content: fullText.substring(contentStart, contentEnd),
+              start: { line: startPos.line, character: startPos.character },
+              end: { line: endPos.line, character: endPos.character },
+              quoteStyle,
+            }
+          }
+
+          i = endOffset
+          break
+        }
+        i++
+      }
+    }
+    else {
+      i++
+    }
+  }
+
+  return null
+}
+
+/**
+ * Extract string at the given cursor position from any text document
+ * Supports multiple quote styles: "", '', ``, """, '''
+ *
+ * @param document The text document
+ * @param position The cursor position
+ * @returns The extracted string content (without quotes) or null if not found
+ */
+export function extractStringAtPosition(
+  document: TextDocument,
+  position: Position,
+): string | null {
+  const line = document.lineAt(position.line).text
+  const cursorChar = position.character
+
+  // Try each quote style, starting with longer ones (triple quotes first)
+  for (const quoteStyle of QUOTE_STYLES) {
+    let result: ExtractResult | null = null
+
+    if (quoteStyle.multiLine) {
+      // For multi-line strings, we need to search the entire document
+      result = findMultiLineString(document, position.line, cursorChar, quoteStyle)
+    }
+    else {
+      // For single-line strings, just search the current line
+      result = findSingleLineString(line, position.line, cursorChar, quoteStyle)
+    }
+
+    if (result) {
+      return result.content
+    }
+  }
+
+  return null
+}
+
+/**
+ * Extract string with full details (position, quote style, etc.)
+ */
+export function extractStringWithDetails(
+  document: TextDocument,
+  position: Position,
+): ExtractResult | null {
+  const line = document.lineAt(position.line).text
+  const cursorChar = position.character
+
+  for (const quoteStyle of QUOTE_STYLES) {
+    let result: ExtractResult | null = null
+
+    if (quoteStyle.multiLine) {
+      result = findMultiLineString(document, position.line, cursorChar, quoteStyle)
+    }
+    else {
+      result = findSingleLineString(line, position.line, cursorChar, quoteStyle)
+    }
+
+    if (result) {
+      return result
+    }
+  }
+
+  return null
 }
