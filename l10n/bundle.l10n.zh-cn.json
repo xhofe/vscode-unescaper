@@ -1,4 +1,5 @@
 {
   "No text selected or found at cursor position": "没有选中文本或在光标位置找不到字符串",
-  "Invalid JSON format": "无效的 JSON 格式"
+  "Invalid JSON format": "无效的 JSON 格式",
+  "String information at cursor position": "光标位置的字符串信息"
 }

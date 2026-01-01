@@ -1,4 +1,6 @@
 {
   "unescape.preview.title": "反转义预览",
-  "unescape.previewJson.title": "反转义预览 (JSON)"
+  "unescape.previewJson.title": "转义预览 (JSON)",
+  "unescape.jsonIndentSize.description": "JSON 格式化时使用的缩进空格数（0 为紧凑格式）",
+  "unescape.statusBarEnabled.description": "当光标在字符串内时显示状态栏信息"
 }

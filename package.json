@@ -48,6 +48,20 @@
         "title": "%unescape.previewJson.title%"
       }
     ],
+    "keybindings": [
+      {
+        "command": "unescape.preview",
+        "key": "ctrl+alt+u",
+        "mac": "cmd+alt+u",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "unescape.previewJson",
+        "key": "ctrl+alt+j",
+        "mac": "cmd+alt+j",
+        "when": "editorTextFocus"
+      }
+    ],
     "menus": {
       "editor/context": [
         {
@@ -63,7 +77,20 @@
     "configuration": {
       "type": "object",
       "title": "unescape",
-      "properties": {}
+      "properties": {
+        "unescape.jsonIndentSize": {
+          "type": "number",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 8,
+          "description": "Number of spaces to use for JSON indentation (0 for compact)"
+        },
+        "unescape.statusBarEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show status bar information when cursor is inside a string"
+        }
+      }
     }
   },
   "scripts": {
@@ -80,22 +107,22 @@
     "ext:publish": "vsxpub --no-dependencies"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.2.1",
+    "@antfu/eslint-config": "^4.19.0",
     "@antfu/ni": "^23.3.1",
-    "@types/node": "^22.13.4",
-    "@types/vscode": "^1.97.0",
-    "@vscode/vsce": "^3.2.2",
-    "bumpp": "^10.0.3",
-    "eslint": "^9.20.1",
-    "ovsx": "^0.10.5",
-    "pnpm": "^10.4.1",
-    "reactive-vscode": "^0.2.10",
-    "taze": "^19.8.1",
-    "tsdown": "^0.9.6",
-    "typescript": "^5.7.3",
-    "vite": "^6.1.0",
-    "vitest": "^3.0.5",
-    "vscode-ext-gen": "^1.0.0",
+    "@types/node": "^22.19.3",
+    "@types/vscode": "^1.107.0",
+    "@vscode/vsce": "^3.7.1",
+    "bumpp": "^10.3.2",
+    "eslint": "^9.39.2",
+    "ovsx": "^0.10.7",
+    "pnpm": "^10.27.0",
+    "reactive-vscode": "^0.2.22",
+    "taze": "^19.9.2",
+    "tsdown": "^0.9.9",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.1",
+    "vitest": "^3.2.4",
+    "vscode-ext-gen": "^1.5.1",
     "vsxpub": "^0.1.2"
   }
 }

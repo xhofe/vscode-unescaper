@@ -10,7 +10,12 @@ A VS Code extension to preview unescaped strings. Perfect for working with JSON,
 - **Unescape Preview**: Convert escape sequences to their actual characters and preview in a new tab
 - **Unescape Preview (JSON)**: Unescape and format as pretty-printed JSON
 - **Smart String Detection**: Automatically extracts string at cursor position when no text is selected
+- **Status Bar Information**: Shows string length and escape sequence count when cursor is inside a string
+- **Syntax Highlighting**: Auto-detects content type (JSON, JavaScript, XML, etc.) and applies appropriate syntax highlighting
+- **Keyboard Shortcuts**: Quick access via `Ctrl+Alt+U` (or `Cmd+Alt+U` on Mac) for basic unescape and `Ctrl+Alt+J` (or `Cmd+Alt+J`) for JSON preview
 - **Multi-language Support**: Works with any text file, supports multiple quote styles
+- **Language-Specific Strings**: Supports Python raw strings (`r""`), C# verbatim strings (`@""`), Rust raw strings (`r#""#`)
+- **Configurable**: Customize JSON indentation size and status bar visibility
 - **i18n**: English and Chinese localization
 
 ## Usage
@@ -57,6 +62,18 @@ The smart string detection supports various quote styles used in different progr
 | Backticks | `` `hello` `` | JavaScript (template literals), Shell |
 | Triple double quotes | `"""hello"""` | Python docstrings |
 | Triple single quotes | `'''hello'''` | Python docstrings |
+| Python raw strings | `r"hello\n"` | Python (no escape processing) |
+| Python f-strings | `f"hello {name}"` | Python (formatted strings) |
+| Python byte strings | `b"hello"` | Python |
+| C# verbatim strings | `@"hello\nworld"` | C# (no escape processing) |
+| Rust raw strings | `r#"hello"#` | Rust (no escape processing) |
+
+## Keyboard Shortcuts
+
+| Command | Windows/Linux | macOS |
+|---------|---------------|-------|
+| Unescape Preview | `Ctrl+Alt+U` | `Cmd+Alt+U` |
+| Unescape Preview (JSON) | `Ctrl+Alt+J` | `Cmd+Alt+J` |
 
 ## Example
 
@@ -97,7 +114,10 @@ World	!
 
 <!-- configs -->
 
-**No data**
+| Key                         | Description                                                  | Type      | Default |
+| --------------------------- | ------------------------------------------------------------ | --------- | ------- |
+| `unescape.jsonIndentSize`   | Number of spaces to use for JSON indentation (0 for compact) | `number`  | `2`     |
+| `unescape.statusBarEnabled` | Show status bar information when cursor is inside a string   | `boolean` | `true`  |
 
 <!-- configs -->
 

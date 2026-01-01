@@ -12,17 +12,45 @@ interface QuoteStyle {
   supportsEscape: boolean
   /** Whether this is a multi-line quote style (e.g., triple quotes) */
   multiLine: boolean
+  /** Optional prefix (e.g., 'r' for Python raw strings, '@' for C# verbatim) */
+  prefix?: string
+  /** Whether the prefix disables escape sequences */
+  prefixDisablesEscape?: boolean
 }
 
 /**
  * Common quote styles used in various programming languages
  */
 const QUOTE_STYLES: QuoteStyle[] = [
+  // Python raw strings (no escape processing)
+  { open: '"', close: '"', supportsEscape: false, multiLine: false, prefix: 'r', prefixDisablesEscape: true },
+  { open: '\'', close: '\'', supportsEscape: false, multiLine: false, prefix: 'r', prefixDisablesEscape: true },
+  { open: '"""', close: '"""', supportsEscape: false, multiLine: true, prefix: 'r', prefixDisablesEscape: true },
+  { open: '\'\'\'', close: '\'\'\'', supportsEscape: false, multiLine: true, prefix: 'r', prefixDisablesEscape: true },
+
+  // C# verbatim strings (no escape processing except for double quotes)
+  { open: '"', close: '"', supportsEscape: false, multiLine: true, prefix: '@', prefixDisablesEscape: true },
+
+  // Rust raw strings (with multiple # for flexibility)
+  { open: '"', close: '"', supportsEscape: false, multiLine: true, prefix: 'r#', prefixDisablesEscape: true },
+  { open: '"', close: '"', supportsEscape: false, multiLine: true, prefix: 'r##', prefixDisablesEscape: true },
+  { open: '"', close: '"', supportsEscape: false, multiLine: true, prefix: 'r###', prefixDisablesEscape: true },
+
+  // Python byte strings
+  { open: '"', close: '"', supportsEscape: true, multiLine: false, prefix: 'b' },
+  { open: '\'', close: '\'', supportsEscape: true, multiLine: false, prefix: 'b' },
+
+  // Python f-strings (formatted strings)
+  { open: '"', close: '"', supportsEscape: true, multiLine: false, prefix: 'f' },
+  { open: '\'', close: '\'', supportsEscape: true, multiLine: false, prefix: 'f' },
+
   // Triple quotes (must be checked before single quotes)
   { open: '"""', close: '"""', supportsEscape: true, multiLine: true },
   { open: '\'\'\'', close: '\'\'\'', supportsEscape: true, multiLine: true },
+
   // Backtick / template literals
   { open: '`', close: '`', supportsEscape: true, multiLine: true },
+
   // Standard quotes
   { open: '"', close: '"', supportsEscape: true, multiLine: false },
   { open: '\'', close: '\'', supportsEscape: true, multiLine: false },
@@ -64,13 +92,28 @@ function findSingleLineString(
   cursorChar: number,
   quoteStyle: QuoteStyle,
 ): ExtractResult | null {
-  const { open, close, supportsEscape } = quoteStyle
+  const { open, close, supportsEscape, prefix } = quoteStyle
 
   let i = 0
   while (i < line.length) {
+    // Check for optional prefix
+    let prefixStart = i
+    let prefixLength = 0
+    if (prefix) {
+      if (line.substring(i, i + prefix.length) === prefix) {
+        prefixLength = prefix.length
+        i += prefix.length
+      }
+      else {
+        // This quote style requires a prefix but it's not present, skip
+        i++
+        continue
+      }
+    }
+
     // Look for opening quote
     if (line.substring(i, i + open.length) === open) {
-      const startChar = i
+      const startChar = prefixLength > 0 ? prefixStart : i
       i += open.length
       const contentStart = i
 
@@ -86,7 +129,7 @@ function findSingleLineString(
           const contentEnd = i
           const endChar = i + close.length
 
-          // Check if cursor is within this string (inclusive of quotes)
+          // Check if cursor is within this string (inclusive of quotes and prefix)
           if (cursorChar >= startChar && cursorChar < endChar) {
             return {
               content: line.substring(contentStart, contentEnd),
@@ -119,7 +162,7 @@ function findMultiLineString(
   cursorChar: number,
   quoteStyle: QuoteStyle,
 ): ExtractResult | null {
-  const { open, close, supportsEscape } = quoteStyle
+  const { open, close, supportsEscape, prefix } = quoteStyle
 
   // Get full text and calculate cursor offset
   const fullText = document.getText()
@@ -131,15 +174,37 @@ function findMultiLineString(
 
   let i = 0
   while (i < fullText.length) {
+    // Check for optional prefix
+    let prefixStart = i
+    let prefixLength = 0
+    if (prefix) {
+      if (fullText.substring(i, i + prefix.length) === prefix) {
+        prefixLength = prefix.length
+        i += prefix.length
+      }
+      else {
+        // This quote style requires a prefix but it's not present, skip
+        i++
+        continue
+      }
+    }
+
     // Look for opening quote
     if (fullText.substring(i, i + open.length) === open) {
-      const startOffset = i
+      const startOffset = prefixLength > 0 ? prefixStart : i
       i += open.length
       const contentStart = i
 
+      // For Rust raw strings, find matching closing with same number of #
+      let closeToMatch = close
+      if (prefix?.startsWith('r#')) {
+        const hashCount = (prefix.match(/#/g) || []).length
+        closeToMatch = '"' + '#'.repeat(hashCount)
+      }
+
       // Find closing quote
       while (i < fullText.length) {
-        if (fullText.substring(i, i + close.length) === close) {
+        if (fullText.substring(i, i + closeToMatch.length) === closeToMatch) {
           // Check if escaped
           if (supportsEscape && isEscaped(fullText, i)) {
             i++
@@ -147,7 +212,7 @@ function findMultiLineString(
           }
 
           const contentEnd = i
-          const endOffset = i + close.length
+          const endOffset = i + closeToMatch.length
 
           // Check if cursor is within this string
           if (cursorOffset >= startOffset && cursorOffset < endOffset) {

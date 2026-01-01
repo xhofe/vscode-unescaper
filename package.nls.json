@@ -1,4 +1,6 @@
 {
   "unescape.preview.title": "Unescape Preview",
-  "unescape.previewJson.title": "Unescape Preview (JSON)"
+  "unescape.previewJson.title": "Unescape Preview (JSON)",
+  "unescape.jsonIndentSize.description": "Number of spaces to use for JSON indentation (0 for compact)",
+  "unescape.statusBarEnabled.description": "Show status bar information when cursor is inside a string"
 }
