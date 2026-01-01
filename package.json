@@ -1,7 +1,7 @@
 {
   "publisher": "xhofe",
   "name": "unescape",
-  "displayName": "unescape",
+  "displayName": "Unescape",
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@10.4.1",
@@ -35,7 +35,8 @@
     "vscode": "^1.97.0"
   },
   "activationEvents": [
-    "onCommand:unescape.preview"
+    "onCommand:unescape.preview",
+    "onCommand:unescape.previewJson"
   ],
   "l10n": "./l10n",
   "contributes": {
@@ -43,12 +44,20 @@
       {
         "command": "unescape.preview",
         "title": "%unescape.preview.title%"
+      },
+      {
+        "command": "unescape.previewJson",
+        "title": "%unescape.previewJson.title%"
       }
     ],
     "menus": {
       "editor/context": [
         {
           "command": "unescape.preview",
+          "group": "1_modification"
+        },
+        {
+          "command": "unescape.previewJson",
           "group": "1_modification"
         }
       ]

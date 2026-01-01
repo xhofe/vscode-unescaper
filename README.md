@@ -15,9 +15,10 @@
 
 <!-- commands -->
 
-| Command            | Title                    |
-| ------------------ | ------------------------ |
-| `unescape.preview` | %unescape.preview.title% |
+| Command                | Title                        |
+| ---------------------- | ---------------------------- |
+| `unescape.preview`     | %unescape.preview.title%     |
+| `unescape.previewJson` | %unescape.previewJson.title% |
 
 <!-- commands -->
 
