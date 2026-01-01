@@ -28,16 +28,31 @@
   "files": [
     "LICENSE.md",
     "dist/*",
+    "l10n/*",
     "res/*"
   ],
   "engines": {
     "vscode": "^1.97.0"
   },
   "activationEvents": [
-    "onStartupFinished"
+    "onCommand:unescape.preview"
   ],
+  "l10n": "./l10n",
   "contributes": {
-    "commands": [],
+    "commands": [
+      {
+        "command": "unescape.preview",
+        "title": "%unescape.preview.title%"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "unescape.preview",
+          "group": "1_modification"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "unescape",

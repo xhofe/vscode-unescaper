@@ -1,8 +1,9 @@
 import { defineExtension } from 'reactive-vscode'
-import { window } from 'vscode'
+import { useUnescapePreviewCommand } from './commands/unescape-preview'
 
 const { activate, deactivate } = defineExtension(() => {
-  window.showInformationMessage('Hello')
+  // Register commands
+  useUnescapePreviewCommand()
 })
 
 export { activate, deactivate }

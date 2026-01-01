@@ -15,7 +15,9 @@
 
 <!-- commands -->
 
-**No data**
+| Command            | Title                    |
+| ------------------ | ------------------------ |
+| `unescape.preview` | %unescape.preview.title% |
 
 <!-- commands -->
 
