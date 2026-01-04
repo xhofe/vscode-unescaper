@@ -1,7 +1,7 @@
 {
   "publisher": "xhofe",
-  "name": "unescape",
-  "displayName": "Unescape",
+  "name": "unescaper",
+  "displayName": "Unescaper",
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@10.4.1",
@@ -9,13 +9,13 @@
   "author": "Andy Hsu <i@nn.ci>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/xhofe",
-  "homepage": "https://github.com/xhofe/vscode-unescape#readme",
+  "homepage": "https://github.com/xhofe/vscode-unescaper#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xhofe/vscode-unescape"
+    "url": "https://github.com/xhofe/vscode-unescaper"
   },
   "bugs": {
-    "url": "https://github.com/xhofe/vscode-unescape/issues"
+    "url": "https://github.com/xhofe/vscode-unescaper/issues"
   },
   "sponsor": {
     "url": "https://github.com/sponsors/xhofe"
@@ -40,29 +40,29 @@
   "contributes": {
     "commands": [
       {
-        "command": "unescape.preview",
-        "title": "%unescape.preview.title%"
+        "command": "unescaper.preview",
+        "title": "%unescaper.preview.title%"
       },
       {
-        "command": "unescape.previewJson",
-        "title": "%unescape.previewJson.title%"
+        "command": "unescaper.previewJson",
+        "title": "%unescaper.previewJson.title%"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "unescape.preview",
+          "command": "unescaper.preview",
           "group": "1_modification"
         },
         {
-          "command": "unescape.previewJson",
+          "command": "unescaper.previewJson",
           "group": "1_modification"
         }
       ]
     },
     "configuration": {
       "type": "object",
-      "title": "unescape",
+      "title": "unescaper",
       "properties": {}
     }
   },

@@ -72,7 +72,7 @@ export function useUnescapePreviewCommand(): void {
   )
 
   // Basic unescape preview
-  useCommand('unescape.preview', async () => {
+  useCommand('unescaper.preview', async () => {
     const text = getTextToProcess()
 
     if (!text) {
@@ -87,7 +87,7 @@ export function useUnescapePreviewCommand(): void {
   })
 
   // Unescape + JSON format preview
-  useCommand('unescape.previewJson', async () => {
+  useCommand('unescaper.previewJson', async () => {
     const text = getTextToProcess()
 
     if (!text) {

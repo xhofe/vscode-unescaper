@@ -1,6 +1,6 @@
-# Unescape
+# Unescaper
 
-<a href="https://marketplace.visualstudio.com/items?itemName=xhofe.unescape" target="__blank"><img src="https://img.shields.io/visual-studio-marketplace/v/xhofe.unescape.svg?color=eee&amp;label=VS%20Code%20Marketplace&logo=visual-studio-code" alt="Visual Studio Marketplace Version" /></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=xhofe.unescaper" target="__blank"><img src="https://img.shields.io/visual-studio-marketplace/v/xhofe.unescaper.svg?color=eee&amp;label=VS%20Code%20Marketplace&logo=visual-studio-code" alt="Visual Studio Marketplace Version" /></a>
 <a href="https://kermanx.github.io/reactive-vscode/" target="__blank"><img src="https://img.shields.io/badge/made_with-reactive--vscode-%23007ACC?style=flat&labelColor=%23229863" alt="Made with reactive-vscode" /></a>
 
 A VS Code extension to preview unescaped strings. Perfect for working with JSON, log files, or any text containing escape sequences.
@@ -98,10 +98,10 @@ World !
 
 <!-- commands -->
 
-| Command                | Title                        |
-| ---------------------- | ---------------------------- |
-| `unescape.preview`     | %unescape.preview.title%     |
-| `unescape.previewJson` | %unescape.previewJson.title% |
+| Command                 | Title                         |
+| ----------------------- | ----------------------------- |
+| `unescaper.preview`     | %unescaper.preview.title%     |
+| `unescaper.previewJson` | %unescaper.previewJson.title% |
 
 <!-- commands -->
 
