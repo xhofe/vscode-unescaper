@@ -57,6 +57,18 @@ The smart string detection supports various quote styles used in different progr
 | Backticks | `` `hello` `` | JavaScript (template literals), Shell |
 | Triple double quotes | `"""hello"""` | Python docstrings |
 | Triple single quotes | `'''hello'''` | Python docstrings |
+| Python raw strings | `r"hello\n"` | Python (no escape processing) |
+| Python f-strings | `f"hello {name}"` | Python (formatted strings) |
+| Python byte strings | `b"hello"` | Python |
+| C# verbatim strings | `@"hello\nworld"` | C# (no escape processing) |
+| Rust raw strings | `r#"hello"#` | Rust (no escape processing) |
+
+## Keyboard Shortcuts
+
+| Command | Windows/Linux | macOS |
+|---------|---------------|-------|
+| Unescape Preview | `Ctrl+Alt+U` | `Cmd+Alt+U` |
+| Unescape Preview (JSON) | `Ctrl+Alt+J` | `Cmd+Alt+J` |
 
 ## Example
 
