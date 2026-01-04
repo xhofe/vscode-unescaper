@@ -75,14 +75,14 @@ The smart string detection supports various quote styles used in different progr
 Given a JSON string value:
 
 ```
-{"message": "Hello\\nWorld\\t!"}
+{"message": "Hello\\nWorld\ !"}
 ```
 
 **Unescape Preview** produces:
 
 ```
 Hello
-World	!
+World !
 ```
 
 **Unescape Preview (JSON)** with input `{\"name\":\"Alice\",\"age\":30}` produces:

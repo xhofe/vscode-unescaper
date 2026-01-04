@@ -29,9 +29,9 @@
     "LICENSE.md",
     "dist/*",
     "l10n/*",
-    "res/*",
     "package.nls.*.json",
-    "package.nls.json"
+    "package.nls.json",
+    "res/*"
   ],
   "engines": {
     "vscode": "^1.97.0"

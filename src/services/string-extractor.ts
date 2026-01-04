@@ -97,7 +97,7 @@ function findSingleLineString(
   let i = 0
   while (i < line.length) {
     // Check for optional prefix
-    let prefixStart = i
+    const prefixStart = i
     let prefixLength = 0
     if (prefix) {
       if (line.substring(i, i + prefix.length) === prefix) {
@@ -175,7 +175,7 @@ function findMultiLineString(
   let i = 0
   while (i < fullText.length) {
     // Check for optional prefix
-    let prefixStart = i
+    const prefixStart = i
     let prefixLength = 0
     if (prefix) {
       if (fullText.substring(i, i + prefix.length) === prefix) {
@@ -199,7 +199,7 @@ function findMultiLineString(
       let closeToMatch = close
       if (prefix?.startsWith('r#')) {
         const hashCount = (prefix.match(/#/g) || []).length
-        closeToMatch = '"' + '#'.repeat(hashCount)
+        closeToMatch = `"${'#'.repeat(hashCount)}`
       }
 
       // Find closing quote
